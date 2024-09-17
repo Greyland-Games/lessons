@@ -70,6 +70,7 @@
 
         if (!game_param || game_param.length < 1) {
             content = '<p>Game is not set</p>';
+            game_frame.innerHTML = content
         }
         else if (key_param && key_param.length > 0) {
 
@@ -77,9 +78,10 @@
                 init(data)
                 game_frame.innerHTML = content
             })
-
+            console.log("hello")
         }
         else {
+
             content = '<p>Please provide key for further access</p>';
             game_frame.innerHTML = content
         }
