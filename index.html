@@ -4,11 +4,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+    <title>Lessons - Greyland Games</title>
     <style>
         body {
             background-color: #222;
             font-family: Arial, Helvetica, sans-serif;
+        }
+
+        main {
+            text-align: center;
+        }
+
+        .g-logo {
+            max-width: 100px;
         }
 
         iframe {
@@ -26,40 +35,44 @@
 </head>
 
 <body>
-    <div id="game_frame"></div>
-
+    <main>
+        <div id="game_frame">
+            <img src="clear_G.webp" alt="G logo" class="g-logo">
+        </div>
+    </main>
     <script>
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
 
         const game_param = urlParams.get('game')
         const scene_param = urlParams.get('scene')
+        const lang_param = urlParams.get('lang')
         const key_param = urlParams.get('key')
-
+        const game_modes = ['drag-n-drop', 'pick-items', 'task-list']
 
         let game_frame = document.getElementById("game_frame")
         let content = 'No content'
 
         function success(game = 'task-list', scene) {
-            return `<iframe src='https://greylandgames.com/minigames/${game_param}/index.html?lang=en&scene=${scene_param}' title='minigame'></iframe>`;
+            let scene_setup = ""
+            if (scene_param) {
+                scene_setup = `&scene=${scene_param}`
+            }
+            let lang = lang_param ? lang_param : 'en'
+            return `<iframe src='https://greylandgames.com/minigames/${game_param}/index.html?lang=${lang}${scene_setup}' title='minigame'></iframe>`;
         }
 
         function init(course_key) {
 
             if (course_key == "4FosxydGDTVyTFThCSy5N6D+4Oj5KIXGKA6DiI0QQ8c=") {
-
                 scene = "default_scene";
                 if (!scene_param || scene_param.length > 0) {
                     scene = scene_param
                 }
-
-                content = success(game_param, scene);
+                return true
             }
-            else {
-                content = '<p>Your key is not valid</p>';
-                return
-            }
-
+            content = '<p>Your key is not valid</p>';
+            return false
         }
 
         async function hash(target) {
@@ -70,23 +83,29 @@
 
         if (!game_param || game_param.length < 1) {
             content = '<p>Game is not set</p>';
-            game_frame.innerHTML = content
+            game_frame.innerHTML += content
+        }
+        else if (!game_modes.includes(game_param)) {
+            content = '<p>Game mode is invalid</p>';
+            game_frame.innerHTML += content
         }
         else if (key_param && key_param.length > 0) {
 
             hash(key_param).then(data => {
-                init(data)
-                game_frame.innerHTML = content
+                let res = init(data)
+                if (res) {
+                    content = success(game_param, scene)
+                    game_frame.innerHTML = content
+                }
+                else {
+                    game_frame.innerHTML += content
+                }
             })
-            console.log("hello")
         }
         else {
-
             content = '<p>Please provide key for further access</p>';
-            game_frame.innerHTML = content
+            game_frame.innerHTML += content
         }
-
-
 
     </script>
 </body>
