@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            background-color: #222;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            aspect-ratio: 16/9;
+            border: none;
+        }
+
+        p {
+            color: white;
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="game_frame"></div>
+
+    <script>
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+
+        const game_param = urlParams.get('game')
+        const scene_param = urlParams.get('scene')
+        const key_param = urlParams.get('key')
+
+
+        let game_frame = document.getElementById("game_frame")
+        let content = 'No content'
+
+        function success(game = 'task-list', scene) {
+            return `<iframe src='https://greylandgames.com/minigames/${game_param}/index.html?lang=en&scene=${scene_param}' title='minigame'></iframe>`;
+        }
+
+        function init(course_key) {
+
+            if (course_key == "4FosxydGDTVyTFThCSy5N6D+4Oj5KIXGKA6DiI0QQ8c=") {
+
+                scene = "default_scene";
+                if (!scene_param || scene_param.length > 0) {
+                    scene = scene_param
+                }
+
+                content = success(game_param, scene);
+            }
+            else {
+                content = '<p>Your key is not valid</p>';
+                return
+            }
+
+        }
+
+        async function hash(target) {
+            var buffer = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(target));
+            var chars = Array.prototype.map.call(new Uint8Array(buffer), ch => String.fromCharCode(ch)).join('');
+            return btoa(chars);
+        };
+
+        if (!game_param || game_param.length < 1) {
+            content = '<p>Game is not set</p>';
+        }
+        else if (key_param && key_param.length > 0) {
+
+            hash(key_param).then(data => {
+                init(data)
+                game_frame.innerHTML = content
+            })
+
+        }
+        else {
+            content = '<p>Please provide key for further access</p>';
+            game_frame.innerHTML = content
+        }
+
+
+
+    </script>
+</body>
+
+</html>
